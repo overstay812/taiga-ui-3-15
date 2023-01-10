@@ -27,6 +27,7 @@ import {
     filter,
     mapTo,
     pairwise,
+    share,
     startWith,
     switchMap,
 } from 'rxjs/operators';
@@ -47,12 +48,18 @@ import {TUI_LINE_CLAMP_OPTIONS, TuiLineClampOptions} from './line-clamp-options'
     ],
 })
 export class TuiLineClampComponent implements AfterViewInit {
-    @ViewChild(TuiHintDirective, {read: ElementRef})
+    @ViewChild(TuiHintDirective, {read: ElementRef, static: true})
     private readonly outlet?: ElementRef<HTMLElement>;
 
     private readonly linesLimit$ = new BehaviorSubject(1);
     private readonly isOverflown$ = new Subject<boolean>();
     private initialized = false;
+
+    @HostBinding('style.maxHeight.px')
+    maxHeight: number | null = null;
+
+    @HostBinding('style.height.px')
+    height = 0;
 
     @Input()
     @tuiDefaultProp()
@@ -74,6 +81,7 @@ export class TuiLineClampComponent implements AfterViewInit {
     );
 
     lineClamp$ = this.linesLimit$.pipe(
+        distinctUntilChanged(),
         startWith(1),
         pairwise(),
         switchMap(([prev, next]) =>
@@ -84,6 +92,7 @@ export class TuiLineClampComponent implements AfterViewInit {
                       mapTo(next),
                   ),
         ),
+        share(),
     );
 
     constructor(
@@ -112,16 +121,6 @@ export class TuiLineClampComponent implements AfterViewInit {
         return this.options.showHint && this.overflown ? this.content : '';
     }
 
-    @HostBinding('style.maxHeight.px')
-    get maxHeight(): number | null {
-        return this.initialized ? this.lineHeight * this.linesLimit$.value : null;
-    }
-
-    @HostBinding('style.height.px')
-    get height(): number | null {
-        return !this.outlet ? 0 : this.outlet.nativeElement.scrollHeight + 4 || null;
-    }
-
     @HostListener('transitionend')
     updateView(): void {
         this.cd.detectChanges();
@@ -132,6 +131,7 @@ export class TuiLineClampComponent implements AfterViewInit {
     }
 
     ngDoCheck(): void {
+        this.updateStaticallyHostBinding();
         this.isOverflown$.next(this.overflown);
     }
 
@@ -142,5 +142,15 @@ export class TuiLineClampComponent implements AfterViewInit {
                 this.renderer.addClass(this.elementRef.nativeElement, '_initialized');
                 this.cd.detectChanges();
             });
+    }
+
+    private updateStaticallyHostBinding(): void {
+        if (this.outlet) {
+            this.height = this.outlet.nativeElement.scrollHeight + 4;
+        }
+
+        if (this.initialized) {
+            this.maxHeight = this.lineHeight * this.linesLimit$.value;
+        }
     }
 }
