@@ -115,6 +115,9 @@ export class TuiMultiSelectComponent<T>
     @tuiDefaultProp()
     valueContent: TuiMultiSelectOptions<T>['valueContent'] = this.options.valueContent;
 
+    @Input()
+    rows = Infinity;
+
     @Output()
     readonly searchChange = new EventEmitter<string | null>();
 
@@ -155,14 +158,11 @@ export class TuiMultiSelectComponent<T>
     }
 
     get nativeFocusableElement(): HTMLInputElement | null {
-        return this.input ? this.input.nativeFocusableElement : null;
+        return this.input?.nativeFocusableElement ?? null;
     }
 
     get focused(): boolean {
-        return (
-            (!!this.input && this.input.focused) ||
-            (!!this.hostedDropdown && this.hostedDropdown.focused)
-        );
+        return !!this.input?.focused || !!this.hostedDropdown?.focused;
     }
 
     get computedValue(): readonly T[] {

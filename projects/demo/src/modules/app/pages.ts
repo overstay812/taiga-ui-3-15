@@ -322,6 +322,12 @@ export const pages: TuiDocPages = [
     },
     {
         section: $localize`Components`,
+        title: `ElasticContainer`,
+        keywords: `container, height, transition, expand, контейнер, высота, анимация`,
+        route: `/components/elastic-container`,
+    },
+    {
+        section: $localize`Components`,
         title: `Filter`,
         keywords: `фильтр, filters`,
         route: `/components/filter`,
@@ -935,6 +941,12 @@ export const pages: TuiDocPages = [
         title: `Markdown`,
         keywords: `editor, markdown, wysiwyg, редактор, текст, html, rich, text`,
         route: `/editor/markdown`,
+    },
+    {
+        section: $localize`Editor`,
+        title: `Embed`,
+        keywords: `editor, embed, video player, audio player, youtube, wysiwyg, редактор, плейер, плеер, ютуб, текст, html, rich, text`,
+        route: `/editor/embed`,
     },
     // Navigation
     {

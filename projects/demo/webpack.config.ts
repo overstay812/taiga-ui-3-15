@@ -1,5 +1,8 @@
+import {tuiIsObject} from '@taiga-ui/cdk';
 import {Configuration} from 'webpack';
 import {merge} from 'webpack-merge';
+
+console.info(`\nNODE_OPTIONS=${process.env[`NODE_OPTIONS`]}`);
 
 /**
  * We can't just import TS-file to get its content
@@ -22,6 +25,30 @@ const RAW_TS_QUERY = /raw/;
  */
 const DONT_MUTATE_RAW_FILE_CONTENTS = [`*.ts`, `*.less`, `*.html`];
 
+/**
+ * [Fixed bug in Node.js 18]
+ * error:0308010C:digital envelope routines::unsupported
+ *
+ * https://github.com/webpack/webpack/issues/13572#issuecomment-923736472
+ * Useful when needing to revert to a legacy algorithm
+ * (OpenSSL / potentially less secure one) to temporarily
+ * address any compatibility issues.
+ *
+ * output.hashFunction doesn't work now,
+ * upgrade @angular-devkit/build-angular to v14 and use
+ *
+ * output: {
+ *   hashFunction: `xxhash64`,
+ * },
+ *
+ * instead of:
+ */
+const crypto = require(`crypto`);
+const fallbackCreateHash = crypto.createHash;
+
+crypto.createHash = (algorithm: string) =>
+    fallbackCreateHash(algorithm === `md4` ? `sha256` : algorithm);
+
 const config: Configuration = {
     module: {
         /**
@@ -39,10 +66,11 @@ const config: Configuration = {
     },
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default (ngConfigs: Configuration): Configuration => {
     const ngRules = [...(ngConfigs.module?.rules || [])].map(rule => {
         if (
-            typeof rule === `object` &&
+            tuiIsObject(rule) &&
             DONT_MUTATE_RAW_FILE_CONTENTS.some(
                 pattern => rule.test instanceof RegExp && rule.test?.test(pattern),
             )

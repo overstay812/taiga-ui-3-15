@@ -1,4 +1,5 @@
 import {Directive} from '@angular/core';
+import {TuiYoutubeOptions} from '@taiga-ui/addon-editor/extensions/youtube';
 import {TuiEditorAttachedFile} from '@taiga-ui/addon-editor/interfaces';
 import type {Editor, Range} from '@tiptap/core';
 import type {EditorState} from 'prosemirror-state';
@@ -10,7 +11,7 @@ export abstract class AbstractTuiEditor {
     abstract readonly html: string;
     abstract editable: boolean;
 
-    readonly stateChange$ = new Subject();
+    readonly stateChange$ = new Subject<void>();
     readonly valueChange$ = new Subject<string>();
 
     abstract get state(): EditorState;
@@ -79,4 +80,5 @@ export abstract class AbstractTuiEditor {
     abstract setAnchor(id: string): void;
     abstract removeAnchor(): void;
     abstract setFileLink(preview: TuiEditorAttachedFile): void;
+    abstract setYoutubeVideo(options: TuiYoutubeOptions): void;
 }

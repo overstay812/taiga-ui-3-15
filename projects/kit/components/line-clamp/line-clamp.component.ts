@@ -25,7 +25,7 @@ import {BehaviorSubject, Observable, of, Subject, timer} from 'rxjs';
 import {
     distinctUntilChanged,
     filter,
-    mapTo,
+    map,
     pairwise,
     startWith,
     switchMap,
@@ -54,6 +54,12 @@ export class TuiLineClampComponent implements AfterViewInit {
     private readonly isOverflown$ = new Subject<boolean>();
     private initialized = false;
 
+    @HostBinding('style.maxHeight.px')
+    maxHeight: number | null = null;
+
+    @HostBinding('style.height.px')
+    height = 0;
+
     @Input()
     @tuiDefaultProp()
     set linesLimit(linesLimit: number) {
@@ -81,7 +87,7 @@ export class TuiLineClampComponent implements AfterViewInit {
                 ? of(next)
                 : tuiTypedFromEvent(this.elementRef.nativeElement, 'transitionend').pipe(
                       filter(tuiIsCurrentTarget),
-                      mapTo(next),
+                      map(() => next),
                   ),
         ),
     );
@@ -112,16 +118,6 @@ export class TuiLineClampComponent implements AfterViewInit {
         return this.options.showHint && this.overflown ? this.content : '';
     }
 
-    @HostBinding('style.maxHeight.px')
-    get maxHeight(): number | null {
-        return this.initialized ? this.lineHeight * this.linesLimit$.value : null;
-    }
-
-    @HostBinding('style.height.px')
-    get height(): number | null {
-        return !this.outlet ? 0 : this.outlet.nativeElement.scrollHeight + 4 || null;
-    }
-
     @HostListener('transitionend')
     updateView(): void {
         this.cd.detectChanges();
@@ -132,6 +128,7 @@ export class TuiLineClampComponent implements AfterViewInit {
     }
 
     ngDoCheck(): void {
+        this.updateStaticallyHostBinding();
         this.isOverflown$.next(this.overflown);
     }
 
@@ -142,5 +139,15 @@ export class TuiLineClampComponent implements AfterViewInit {
                 this.renderer.addClass(this.elementRef.nativeElement, '_initialized');
                 this.cd.detectChanges();
             });
+    }
+
+    private updateStaticallyHostBinding(): void {
+        if (this.outlet) {
+            this.height = this.outlet.nativeElement.scrollHeight + 4;
+        }
+
+        if (this.initialized) {
+            this.maxHeight = this.lineHeight * this.linesLimit$.value;
+        }
     }
 }

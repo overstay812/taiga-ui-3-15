@@ -310,6 +310,15 @@ export const ROUTES = [
         },
     },
     {
+        path: `components/elastic-container`,
+        loadChildren: async () =>
+            (await import(`../components/elastic-container/elastic-container.module`))
+                .ExampleTuiElasticContainerModule,
+        data: {
+            title: `ElasticContainer`,
+        },
+    },
+    {
         path: `pipes/field-error`,
         loadChildren: async () =>
             (await import(`../pipes/field-error/field-error.module`))
@@ -1054,6 +1063,15 @@ export const ROUTES = [
             title: `Editor — Markdown`,
         },
     },
+    {
+        path: `editor/embed`,
+        loadChildren: async () =>
+            (await import(`../components/editor/embed/editor-embed.module`))
+                .ExampleTuiEditorEmbedModule,
+        data: {
+            title: `Editor — Embed`,
+        },
+    },
     // FILTER
     {
         path: `components/filter`,
@@ -1745,7 +1763,7 @@ export const ROUTES = [
     imports: [
         RouterModule.forRoot(ROUTES, {
             initialNavigation: `enabledBlocking`,
-            scrollPositionRestoration: `top`,
+            scrollPositionRestoration: `enabled`,
         }),
     ],
     exports: [RouterModule],

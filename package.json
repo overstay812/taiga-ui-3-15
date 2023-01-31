@@ -1,6 +1,6 @@
 {
     "name": "@taiga-ui/components",
-    "version": "3.15.0",
+    "version": "3.16.0",
     "description": "Taiga UI by Tinkoff is a set of components, services, directives and other tools to build high quality UI using modern Angular framework",
     "keywords": [
         "angular",
@@ -73,9 +73,9 @@
         "@angular/platform-server": "^12.2.16",
         "@angular/router": "~12.2.16",
         "core-js": "^2.6.12",
+        "marked": "^4.2.5",
         "parse5": "^6.0.1",
         "rxjs": "~6.6.3",
-        "tslib": "^2.0.0",
         "zone.js": "~0.11.4"
     },
     "devDependencies": {
@@ -85,8 +85,8 @@
         "@angular/cli": "~12.2.17",
         "@angular/compiler-cli": "~12.2.16",
         "@angular/language-service": "~12.2.16",
-        "@commitlint/cli": "^17.4.1",
-        "@commitlint/config-conventional": "^17.4.0",
+        "@commitlint/cli": "^17.4.2",
+        "@commitlint/config-conventional": "^17.4.2",
         "@nrwl/cli": "14.8.6",
         "@nrwl/node": "14.8.6",
         "@nrwl/nx-cloud": "14.7.0",
@@ -98,36 +98,43 @@
         "@types/parse5": "^6.0.3",
         "@types/webpack-env": "^1.18.0",
         "angular-http-server": "^1.11.1",
+        "babel-loader": "^9.1.2",
         "bundlemon": "^2.0.1",
         "cpy-cli": "^4.2.0",
-        "cy2": "~3.4.1",
-        "cypress": "~12.0.2",
-        "eslint": "^8.31.0",
+        "cy2": "~4.0.6",
+        "cypress": "~12.4.1",
+        "cypress-real-events": "^1.7.6",
+        "eslint": "^8.33.0",
         "find-in-files": "~0.5.0",
         "firebase-tools": "^9.23.3",
         "http-server": "^0.13.0",
         "husky": "^8.0.3",
         "kill-port": "^2.0.1",
-        "lint-staged": "^8.2.1",
+        "lint-staged": "^13.1.0",
         "ng-packagr": "^12.2.7",
         "postcss": "^8.4.21",
-        "prettier": "~2.8.2",
+        "prettier": "~2.8.3",
         "rollup": "~2.79.1",
         "standard-version": "^8.0.2",
         "ts-loader": "^9.4.2",
         "ts-node": "~10.9.1",
         "typescript": "~4.3.5",
-        "wait-on": "^6.0.1"
+        "wait-on": "^6.0.1",
+        "webpack": "^5.75.0"
     },
     "engines": {
-        "node": ">= 14",
-        "npm": ">= 7",
+        "node": ">= 16.14",
+        "npm": ">= 8.3",
         "yarn": "Please use npm instead of yarn to install dependencies"
     },
     "authors": [
         "Alex Inkin <alexander@inkin.ru>",
         "Roman Sedov <79601794011@ya.ru>"
     ],
+    "overrides": {
+        "webpack": "$webpack",
+        "babel-loader": "$babel-loader"
+    },
     "standard-version": {
         "scripts": {
             "postchangelog": "ts-node ./scripts/postchangelog.ts",

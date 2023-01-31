@@ -128,7 +128,7 @@ export class TuiComboBoxComponent<T>
     }
 
     get nativeFocusableElement(): HTMLInputElement | null {
-        return this.textfield ? this.textfield.nativeFocusableElement : null;
+        return this.textfield?.nativeFocusableElement ?? null;
     }
 
     get focused(): boolean {

@@ -10,6 +10,7 @@ import {
     TemplateRef,
 } from '@angular/core';
 import {ActivatedRoute, Params, UrlSerializer} from '@angular/router';
+import {tuiIsNumber} from '@taiga-ui/cdk';
 import {BehaviorSubject, Subject} from 'rxjs';
 
 import {tuiCoerceValue} from '../../utils/coerce-value';
@@ -109,10 +110,14 @@ export class TuiDocDocumentationPropertyConnectorDirective<T>
             return;
         }
 
-        const value =
+        let value =
             !!propertyValueWithSuffix && this.documentationPropertyValues
                 ? this.documentationPropertyValues[propertyValueWithSuffix as number]
                 : tuiCoerceValue(propertyValue);
+
+        if (this.documentationPropertyType === 'string' && tuiIsNumber(value)) {
+            value = value.toString();
+        }
 
         this.onValueChange(value as T);
     }

@@ -1,12 +1,9 @@
 import {waitAllRequests} from '@demo-integrations/support/helpers/wait-requests.util';
-import {
-    NIGHT_THEME_KEY,
-    WAIT_BEFORE_SCREENSHOT,
-} from '@demo-integrations/support/properties/shared.entities';
 import {stubExternalIcons} from '@demo-integrations/support/stubs/stub-external-icons.util';
 import {stubMetrics} from '@demo-integrations/support/stubs/stub-metrics';
 
 const NEXT_URL_STORAGE_KEY = `env`;
+const NIGHT_THEME_KEY = `night`;
 const REPEATED_SLASH_REG = new RegExp(`//`, `g`);
 
 interface TuiVisitOptions {
@@ -28,9 +25,10 @@ interface TuiVisitOptions {
     hideNavigation?: boolean;
     skipDecodingUrl?: boolean;
     skipExpectUrl?: boolean;
-    waitRenderedFont?: RegExp | string;
+    waitRenderedFont?: RegExp;
     rootSelector?: string;
     clock?: Date | null;
+    headers?: Record<string, string>;
     /**
      * WARNING: this flag does not provide fully emulation of touch mobile device.
      * Cypress can't do it (https://docs.cypress.io/faq/questions/general-questions-faq#Do-you-support-native-mobile-apps).
@@ -68,6 +66,7 @@ export function tuiVisit(path: string, options: TuiVisitOptions = {}): void {
         hideVersionManager = true,
         hideLanguageSwitcher = true,
         hideGetHelpLinks = true,
+        headers = {},
         pseudoMobile = false,
         waitRenderedFont,
         clock = Date.UTC(2018, 10, 1),
@@ -88,7 +87,14 @@ export function tuiVisit(path: string, options: TuiVisitOptions = {}): void {
           );
 
     cy.visit(`/`, {
+        headers,
         onBeforeLoad: window => {
+            if (headers[`userAgent`]) {
+                Object.defineProperty(window.navigator, `userAgent`, {
+                    value: headers[`userAgent`],
+                });
+            }
+
             const baseHref =
                 window.document.baseURI.replace(`${window.location.origin}/`, ``) ?? `/`;
             const nextUrl = `/${baseHref}${encodedPath}`.replace(REPEATED_SLASH_REG, `/`);
@@ -106,7 +112,7 @@ export function tuiVisit(path: string, options: TuiVisitOptions = {}): void {
         },
     }).then(() => {
         if (skipExpectUrl) {
-            cy.wait(WAIT_BEFORE_SCREENSHOT);
+            cy.tuiWaitBeforeScreenshot();
         } else {
             cy.url().should(`include`, encodedPath);
         }
@@ -129,13 +135,10 @@ export function tuiVisit(path: string, options: TuiVisitOptions = {}): void {
         .then(document => (document as any)?.fonts.ready)
         .then(() => cy.log(`Font loading completed`));
 
-    if (waitRenderedFont || Cypress.env(`waitRenderedFont`)) {
+    if (waitRenderedFont) {
         cy.get(`body`, {log: false})
             .should(`have.css`, `font-family`)
-            .and(
-                `match`,
-                waitRenderedFont || new RegExp(Cypress.env(`waitRenderedFont`)),
-            );
+            .and(`match`, waitRenderedFont);
     }
 
     if (waitAllIcons) {
